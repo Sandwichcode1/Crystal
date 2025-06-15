@@ -1,13 +1,31 @@
 import discord
 from discord.ext import commands
 import os
+import threading
+from flask import Flask
 
+# --- Web Server Setup (to keep alive) ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive!"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    thread = threading.Thread(target=run)
+    thread.start()
+
+# --- Discord Bot Setup ---
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 cog_folders = ["fun_and_more", "levels", "moderation", "roles"]
 GUILD_ID = 1383064822350090421  # replace with your test server ID as int
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
@@ -33,4 +51,8 @@ async def load_cogs():
 async def on_connect():
     await load_cogs()
 
-bot.run("MTM4MzA2MTM1ODk1Nzk1NzEyMA.GaSiB3.prBbl3O0n6I6cPXoFWX-xyrxkywL1MUjo2YNd0")
+# --- Keep alive ---
+keep_alive()
+
+# --- Run the bot ---
+bot.run("MTM4MzA2MTM1ODk1Nzk1NzEyMA.GF3eZF.hejnv-tdzoQbaQqE4_IJAwnjOhkxJzoI7MS2mM")
