@@ -1,6 +1,10 @@
-import discord, json, os
+# cogs/level_remove.py
+import discord
+import json
+import os
 from discord.ext import commands
 from discord import app_commands
+
 
 class LevelRemove(commands.Cog):
     def __init__(self, bot):
@@ -10,11 +14,14 @@ class LevelRemove(commands.Cog):
             with open(self.file_path, "w") as f:
                 json.dump({}, f)
 
-    @app_commands.command(name="levelremove", description="Remove level from a user")
-    @app_commands.describe(user="User", amount="Amount to remove")
-    async def levelremove(self, interaction: discord.Interaction, user: discord.Member, amount: int):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You need admin permissions.", ephemeral=True)
+    async def _has_staff_permission(self, ctx):
+        return ctx.author.guild_permissions.manage_guild
+
+    @app_commands.command(name="levelremove", description="Remove level(s) from a user.", )
+    @app_commands.describe(user="User to remove levels from", amount="Amount of levels to remove")
+    async def levelremove(self, ctx: commands.Context, user: discord.Member, amount: int):
+        if not await self._has_staff_permission(ctx):
+            await ctx.send("❌ You don't have permission to use this command.", ephemeral=True)
             return
 
         with open(self.file_path, "r") as f:
@@ -27,7 +34,7 @@ class LevelRemove(commands.Cog):
         with open(self.file_path, "w") as f:
             json.dump(data, f, indent=4)
 
-        await interaction.response.send_message(f"🔻 Removed `{amount}` level(s) from {user.mention}.")
+        await ctx.send(f"🔻 Removed `{amount}` level(s) from {user.mention}.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(LevelRemove(bot))

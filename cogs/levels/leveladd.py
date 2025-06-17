@@ -1,7 +1,7 @@
+# cogs/levels/level_add.py
 import discord, json, os
 from discord.ext import commands
 from discord import app_commands
-
 class LevelAdd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -11,11 +11,9 @@ class LevelAdd(commands.Cog):
                 json.dump({}, f)
 
     @app_commands.command(name="leveladd", description="Add level to a user")
-    @app_commands.describe(user="User", amount="Amount of levels")
-    async def leveladd(self, interaction: discord.Interaction, user: discord.Member, amount: int):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You need admin permissions.", ephemeral=True)
-            return
+    async def leveladd(self, ctx: commands.Context, user: discord.Member, amount: int):
+        if not ctx.author.guild_permissions.manage_guild:
+            return await ctx.send("❌ You don't have permission to use this command.", ephemeral=True)
 
         with open(self.file_path, "r") as f:
             data = json.load(f)
@@ -27,7 +25,7 @@ class LevelAdd(commands.Cog):
         with open(self.file_path, "w") as f:
             json.dump(data, f, indent=4)
 
-        await interaction.response.send_message(f"✅ Added `{amount}` level(s) to {user.mention}.")
+        await ctx.send(f"✅ Added `{amount}` level(s) to {user.mention}.", ephemeral=True)
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(LevelAdd(bot))

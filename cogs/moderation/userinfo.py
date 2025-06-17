@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
-
+from discord import app_commands
 class UserInfo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    @commands.hybrid_command(name="changeusername", description="Change another user's nickname")
+    ()
+    @app_commands.command(name="changeusername", description="Change another user's nickname")
     async def changeusername(self, ctx: commands.Context, user: discord.Member, *, new_nickname: str):
         # Check if command is used in a guild
         if ctx.guild is None:
@@ -29,6 +29,6 @@ class UserInfo(commands.Cog):
             await ctx.send("I don't have permission to change that user's nickname.")
         except Exception as e:
             await ctx.send(f"Something went wrong: {e}")
-
+ 
 async def setup(bot):
     await bot.add_cog(UserInfo(bot))

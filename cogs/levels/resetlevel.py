@@ -1,7 +1,9 @@
-import discord, json, os
+# cogs/reset_level.py
+import discord
+import json
+import os
 from discord.ext import commands
 from discord import app_commands
-
 class ResetLevel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -11,25 +13,18 @@ class ResetLevel(commands.Cog):
                 json.dump({}, f)
 
     @app_commands.command(name="resetlevel", description="Reset a user's level")
-    @app_commands.describe(user="User to reset")
-    async def resetlevel(self, interaction: discord.Interaction, user: discord.Member):
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("You need admin permissions.", ephemeral=True)
-            return
-
+    @commands.has_permissions(manage_guild=True)
+    async def resetlevel(self, ctx: commands.Context, user: discord.Member):
         with open(self.file_path, "r") as f:
             data = json.load(f)
 
         uid = str(user.id)
-        if uid in data:
-            data[uid]["level"] = 0
-        else:
-            data[uid] = {"level": 0}
+        data[uid] = {"level": 0}
 
         with open(self.file_path, "w") as f:
             json.dump(data, f, indent=4)
 
-        await interaction.response.send_message(f"🧹 Reset level for {user.mention}.")
+        await ctx.reply(f"🧹 Reset level for {user.mention}.", ephemeral=True if ctx.ctx else False)
 
 async def setup(bot):
     await bot.add_cog(ResetLevel(bot))

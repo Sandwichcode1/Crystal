@@ -6,10 +6,13 @@ class Invite(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="invite", description="Get the bot's invite link.")
+    @app_commands.command(name="invite", description="Show invite markdown text")
     async def invite(self, interaction: discord.Interaction):
-        invite_link = "https://discord.com/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=8&scope=bot%20applications.commands"
-        await interaction.response.send_message(f"Invite me to your server:\n{invite_link}")
+        # Corrected markdown link with closing parenthesis
+        markdown_link = "[Add me to your server](https://discord.com/oauth2/authorize?client_id=1383061358957957120&permissions=1719631854169335&integration_type=0&scope=applications.commands+bot)"
+
+        # This shows clickable text inside a normal message, not a code block
+        await interaction.response.send_message(markdown_link, ephemeral=False)
 
 async def setup(bot):
     await bot.add_cog(Invite(bot))
